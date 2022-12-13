@@ -9,11 +9,12 @@ My tutorial of fantastic formal language and automata & compiler principles.
 不判别输入语句的语法正确性，仅仅将每一条输入语句拆解为 token，判别 token 的合法性。
 该语法分析器包含两种类型的 token，每种又细分为多种子类：
 * 字面量
-  * 系统保留关键词，如 if, else, return, fn 等
-  * 用户定义变量名，如 a, result, Node 等
+  * 系统保留关键词，如 `if`, `else`, `return`, `fn` 等
+  * 用户定义变量名，如 `a`, `result`, `Node` 等
 * 符号
-  * 运算符，如 '>', '<', '==' 等
-  * 分割符，如 '('， ')'， '{'， '}'， ‘;’ 等
+  * 运算符，如 `>`, `<`, `==` 等
+  * 分割符，如 `(`， `)`， `{`， `}`， `;` 等
+
 
 
 ### 2. 语法分析
