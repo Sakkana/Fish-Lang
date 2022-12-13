@@ -21,11 +21,11 @@ My tutorial of fantastic formal language and automata & compiler principles.
 
 ### 3. 求值
 
-### 4. interpreter 类型扩展
+### 4. 解释器类型扩展
 
 ### 5. 宏
-
-### 6. compiler & virtual machine
+---
+### 6. 编译器和虚拟机
 
 ### 7. 字节码
 
@@ -35,7 +35,7 @@ My tutorial of fantastic formal language and automata & compiler principles.
 
 ### 10. 符号
 
-### 11. compiler 类型扩展
+### 11. 编译器类型扩展
 
 ### 12. 函数
 
