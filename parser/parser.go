@@ -5,7 +5,6 @@ import (
 	"Fish-Lang/lexser"
 	"Fish-Lang/token"
 	"fmt"
-	"log"
 )
 
 type Parser struct {
@@ -14,6 +13,10 @@ type Parser struct {
 
 	curToken  token.Token
 	peekToken token.Token
+
+	// map: <词法单元类型 -> 相应的解析函数>
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
 // New 构造一个语法分析器
@@ -22,6 +25,26 @@ func New(l *lexser.Lexer) *Parser {
 		lexer:  l,
 		errors: []string{},
 	}
+
+	// 建立 <此法单元 -> 解析函数> 映射
+	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPrefix(token.IDENT, p.parseIndentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+
+	// 前缀运算符
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+
+	// 中缀运算符
+	p.infixParseFns = make(map[token.TokenType]infixParseFn)
+	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS, p.parseInfixExpression)
+	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
+	p.registerInfix(token.EQ, p.parseInfixExpression)
+	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
+	p.registerInfix(token.LT, p.parseInfixExpression)
+	p.registerInfix(token.GT, p.parseInfixExpression)
 
 	// 读取两个词法单元，设置 curToken 和 peekToken
 	p.nextToken()
@@ -64,6 +87,8 @@ func (p *Parser) peekError(t token.TokenType) {
 	p.errors = append(p.errors, msg)
 }
 
+//! ------------------------------------------
+
 // ParseProgram 语法解析
 func (p *Parser) ParseProgram() *ast.Program {
 	// 构造 AST 根节点
@@ -81,39 +106,4 @@ func (p *Parser) ParseProgram() *ast.Program {
 	}
 
 	return program
-}
-
-func (p *Parser) ParseStatement() ast.Statement {
-	log.Printf("Parsing %q now!\n", p.curToken.Literal)
-	switch p.curToken.Type {
-	case token.LET:
-		return p.parseLetStatement()
-	default:
-		return nil
-	}
-}
-
-// 解析 let 语句
-func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.curToken}
-
-	// 	 let		  x		  =		  5;
-	// curToken , peekToken
-	if !p.expectPeek(token.IDENT) {
-		return nil
-	}
-	stmt.Name = &ast.Indentifier{Token: p.curToken, Value: p.curToken.Literal}
-
-	// let		x 		 = 		 5;
-	//		curToken  peekToken
-	if !p.expectPeek(token.ASSIGN) {
-		return nil
-	}
-
-	// TODO: 跳过对表达式的处理
-	for !p.curTokenIs(token.SEMICOLON) {
-		p.nextToken()
-	}
-
-	return stmt
 }
