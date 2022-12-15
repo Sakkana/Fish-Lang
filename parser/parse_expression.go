@@ -84,6 +84,27 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	return ilt
 }
 
+// 逻辑 true, false 解析函数
+func (p *Parser) parseBoolean() ast.Expression {
+	defer untrace(trace("parseBooleanExpression"))
+	return &ast.Boolean{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
+}
+
+// 左括号要更改优先级，解析函数
+func (p *Parser) parseGroupExpression() ast.Expression {
+	defer untrace(trace("parseGroupExpression"))
+
+	p.nextToken()
+
+	exp := p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	return exp
+}
+
 // 前缀表达式解析函数
 func (p *Parser) parsePrefixExpression() ast.Expression {
 	defer untrace(trace("parsePrefixExpression"))
